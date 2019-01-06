@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69f030a8-bc23-47c7-972c-a2aebab60f34}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>MozafariShallow.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>{794a9b2e-b8c5-4038-a0d6-404cdcabe56c}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MozafariShallow.py" />
+    <Compile Include="SpykeTorch\functional.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpykeTorch\snn.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpykeTorch\utils.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpykeTorch\visualization.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SpykeTorch\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{794a9b2e-b8c5-4038-a0d6-404cdcabe56c}\3.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SpykeTorch\" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
