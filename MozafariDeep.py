@@ -222,7 +222,7 @@ kernels = [ utils.DoGKernel(3,3/9,6/9),
 filter = utils.Filter(kernels, padding = 6, thresholds = 50)
 s1c1 = S1C1Transform(filter)
 
-data_root = "/home/milad_mozafari/research/SpykeTorch/mnist/data"
+data_root = "data"
 MNIST_train = utils.CacheDataset(torchvision.datasets.MNIST(root=data_root, train=True, download=True, transform = s1c1))
 MNIST_test = utils.CacheDataset(torchvision.datasets.MNIST(root=data_root, train=False, download=True, transform = s1c1))
 MNIST_loader = DataLoader(MNIST_train, batch_size=1000, shuffle=False)
