@@ -7,11 +7,28 @@ from torchvision import datasets
 import os
 
 def to_pair(data):
+	r"""Converts a single or a tuple of data into a pair. If the data is a tuple with more than two elements, it selects
+	the first two of them. In case of single data, it duplicates that data into a pair.
+
+	Args:
+		data (object or tuple): The input data.
+
+	Returns:
+		Tuple: A pair of data.
+	"""
 	if isinstance(data, tuple):
 		return data[0:2]
 	return (data, data)
 
 def generate_inhibition_kernel(inhibition_percents):
+	r"""Generates an inhibition kernel suitable to be used by :func:`~functional.intensity_lateral_inhibition`.
+
+	Args:
+		inhibition_percents (sequence): The sequence of inhibition factors (in range [0,1]).
+
+	Returns:
+		Tensor: Inhibition kernel.
+	"""
 	inhibition_kernel = torch.zeros(2*len(inhibition_percents)+1, 2*len(inhibition_percents)+1).float()
 	center = len(inhibition_percents)
 	for i in range(2*len(inhibition_percents)+1):
@@ -22,6 +39,13 @@ def generate_inhibition_kernel(inhibition_percents):
 	return inhibition_kernel
 
 class LateralIntencityInhibition:
+	r"""Applies lateral inhibition on intensities. For each location, this inhibition decreases the intensity of the
+	surrounding cells that has lower intensities by a specific factor. This factor is relative to the distance of the
+	neighbors and are put in the :attr:`inhibition_percents`.
+
+	Args:
+		inhibition_percents (sequence): The sequence of inhibition factors (in range [0,1]).
+	"""
 	def __init__(self, inhibition_percents):
 		self.inhibition_kernel = generate_inhibition_kernel(inhibition_percents)
 		self.inhibition_kernel.unsqueeze_(0).unsqueeze_(0)
@@ -66,14 +90,22 @@ class LateralIntencityInhibition:
 		return self.intensity_lateral_inhibition(input)
 
 class FilterKernel:
+	r"""Base class for generating image filter kernels such as Gabor, DoG, etc. Each subclass should override :attr:`__call__` function.
+	"""
 	def __init__(self, window_size):
 		self.window_size = window_size
 
 	def __call__(self):
 		pass
 
-# packs DoG parameters
 class DoGKernel(FilterKernel):
+	r"""Generates DoG filter kernel.
+
+	Args:
+		window_size (int): The size of the window (square window).
+		sigma1 (float): The sigma for the first Gaussian function.
+		sigma2 (float): The sigma for the second Gaussian function.
+	"""
 	def __init__(self, window_size, sigma1, sigma2):
 		super(DoGKernel, self).__init__(window_size)
 		self.sigma1 = sigma1
@@ -95,8 +127,14 @@ class DoGKernel(FilterKernel):
 		dog_tensor = torch.from_numpy(dog)
 		return dog_tensor.float()
 
-# packs Gabor parameters
 class GaborKernel(FilterKernel):
+	r"""Generates Gabor filter kernel.
+
+	Args:
+		window_size (int): The size of the window (square window).
+		orientation (float): The orientation of the Gabor filter (in degrees).
+		div (float, optional): The divisor of the lambda equation. Default: 4.0
+	"""
 	def __init__(self, window_size, orientation, div=4.0):
 		super(GaborKernel, self).__init__(window_size)
 		self.orientation = orientation
@@ -122,7 +160,22 @@ class GaborKernel(FilterKernel):
 		return gabor_tensor.float()
 
 class Filter:
-	# kernels must be a list of filter kernels
+	r"""Applies a filter transform. Each filter contains a sequence of :atr:`FilterKernel` objects.
+	The result of each filter kernel will be passed through a given threshold (if not :attr:`None`).
+
+	Args:
+		filter_kernels (sequence of FilterKernels): The sequence of filter kernels.
+		padding (int, optional): The size of the padding for the convolution of filter kernels. Default: 0
+		thresholds (sequence of floats, optional): The threshold for each filter kernel. Default: None
+		use_abs (boolean, optional): To compute the absolute value of the outputs or not. Default: False
+
+	.. note::
+
+		The size of the compund filter kernel tensor (stack of individual filter kernels) will be equal to the 
+		greatest window size among kernels. All other smaller kernels will be zero-padded with an appropriate 
+		amount.
+	"""
+	# filter_kernels must be a list of filter kernels
 	# thresholds must be a list of thresholds for each kernel
 	def __init__(self, filter_kernels, padding=0, thresholds=None, use_abs=False):
 		tensor_list = []
@@ -159,6 +212,17 @@ class Filter:
 		return output
 
 class Intensity2Latency:
+	r"""Applies intensity to latency transform. Spike waves are generated in the form of
+	spike bins with almost equal number of spikes.
+
+	Args:
+		number_of_spike_bins (int): Number of spike bins (time steps).
+		to_spike (boolean, optional): To generate spike-wave tensor or not. Default: False
+
+	.. note::
+
+		If :attr:`to_spike` is :attr:`False`, then the result is intesities that are ordered and packed into bins.
+	"""
 	def __init__(self, number_of_spike_bins, to_spike=False):
 		self.time_steps = number_of_spike_bins
 		self.to_spike = to_spike
@@ -199,36 +263,85 @@ class Intensity2Latency:
 			return self.intensity_to_latency(image).sign()
 		return self.intensity_to_latency(image)
 
-class ImageFolderCache(datasets.ImageFolder):
-	def __init__(self, root, transform=None, target_transform=None,
-                 loader=datasets.folder.default_loader, cache_address=None):
-		super(ImageFolderCache, self).__init__(root, transform=transform, target_transform=target_transform, loader=loader)
-		self.imgs = self.samples
+#class ImageFolderCache(datasets.ImageFolder):
+#	def __init__(self, root, transform=None, target_transform=None,
+#                 loader=datasets.folder.default_loader, cache_address=None):
+#		super(ImageFolderCache, self).__init__(root, transform=transform, target_transform=target_transform, loader=loader)
+#		self.imgs = self.samples
+#		self.cache_address = cache_address
+#		self.cache = [None] * len(self)
+
+#	def __getitem__(self, index):
+#		path, target = self.samples[index]
+#		if self.cache[index] is None:
+#			sample = self.loader(path)
+#			if self.transform is not None:
+#				sample = self.transform(sample)
+#			if self.target_transform is not None:
+#				target = self.target_transform(target)
+
+#			#cache it
+#			if self.cache_address is None:
+#				self.cache[index] = sample
+#			else:
+#				save_path = os.path.join(self.cache_address, str(index)+'.c')
+#				torch.save(sample, save_path)
+#				self.cache[index] = save_path
+#		else:
+#			if self.cache_address is None:
+#				sample = self.cache[index]
+#			else:
+#				sample = torch.load(self.cache[index])
+#		return sample, target
+
+#	def reset_cache(self):
+#		self.cache = [None] * len(self)
+
+class CacheDataset(torch.utils.data.Dataset):
+	r"""A wrapper dataset to cache pre-processed data. It can cache data on RAM or a secondary memory.
+
+	.. note::
+
+		Since converting image into spike-wave can be time consuming, we recommend to wrap your dataset into a :attr:`CacheDataset`
+		object.
+
+	Args:
+		dataset (torch.utils.data.Dataset): The reference dataset object.
+		cache_address (str, optional): The location of cache in the secondary memory. Use :attr:`None` to cache on RAM. Default: None
+	"""
+	def __init__(self, dataset, cache_address=None):
+		self.dataset = dataset
 		self.cache_address = cache_address
-		self.cache = [None] * len(self)
+		self.cache = [None] * len(self.dataset)
 
 	def __getitem__(self, index):
-		path, target = self.samples[index]
 		if self.cache[index] is None:
-			sample = self.loader(path)
-			if self.transform is not None:
-				sample = self.transform(sample)
-			if self.target_transform is not None:
-				target = self.target_transform(target)
-
 			#cache it
+			sample, target = self.dataset[index]
 			if self.cache_address is None:
-				self.cache[index] = sample
+				self.cache[index] = sample, target
 			else:
-				save_path = os.path.join(self.cache_address, str(index)+'.c')
-				torch.save(sample, save_path)
+				save_path = os.path.join(self.cache_address, str(index))
+				torch.save(sample, save_path + ".cd")
+				torch.save(target, save_path + ".cl")
 				self.cache[index] = save_path
 		else:
 			if self.cache_address is None:
-				sample = self.cache[index]
+				sample, target = self.cache[index]
 			else:
-				sample = torch.load(self.cache[index])
+				sample = torch.load(self.cache[index] + ".cd")
+				target = torch.load(self.cache[index] + ".cl")
 		return sample, target
 
 	def reset_cache(self):
+		r"""Clears the cached data. It is useful when you want to change a pre-processing parameter during
+		the training process.
+		"""
+		if self.cache_address is not None:
+			for add in self.cache:
+				os.remove(add + ".cd")
+				os.remove(add + ".cl")
 		self.cache = [None] * len(self)
+
+	def __len__(self):
+		return len(self.dataset)

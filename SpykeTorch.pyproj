@@ -24,6 +24,9 @@
     <Content Include="logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MozafariDeep.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MozafariShallow.py" />
     <Compile Include="SpykeTorch\functional.py">
       <SubType>Code</SubType>

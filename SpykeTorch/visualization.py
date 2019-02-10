@@ -6,6 +6,17 @@ import matplotlib.image as mpimg
 
 # Show 2D the tensor.
 def show_tensor(aTensor, _vmin = None, _vmax = None):
+	r"""Plots a 2D tensor in gray color map and shows it in a window.
+
+	Args:
+		aTensor (Tensor): The input tensor.
+		_vmin (float, optional): Minimum value. Default: None
+		_vmax (float, optional): Maximum value. Default: None
+
+	.. note::
+
+		:attr:`None` for :attr:`_vmin` or :attr:`_vmin` causes an auto-scale mode for each.
+	"""
 	if aTensor.is_cuda:
 		aTensor = aTensor.cpu()
 	plt.figure()
@@ -14,6 +25,18 @@ def show_tensor(aTensor, _vmin = None, _vmax = None):
 	plt.show()
 
 def plot_tensor_in_image(fname, aTensor, _vmin = None, _vmax = None):
+	r"""Plots a 2D tensor in gray color map in an image file.
+
+	Args:
+		fname (str): The file name.
+		aTensor (Tensor): The input tensor.
+		_vmin (float, optional): Minimum value. Default: None
+		_vmax (float, optional): Maximum value. Default: None
+
+	.. note::
+
+		:attr:`None` for :attr:`_vmin` or :attr:`_vmin` causes an auto-scale mode for each.
+	"""
 	if aTensor.is_cuda:
 		aTensor = aTensor.cpu()
 	plt.imsave(fname,aTensor.numpy(),cmap='gray', vmin=_vmin, vmax=_vmax)

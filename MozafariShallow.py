@@ -40,7 +40,7 @@ class Mozafari2018(nn.Module):
 		self.dropout = torch.ones(self.number_of_features) * dropout
 		self.to_be_dropped = torch.bernoulli(self.dropout).nonzero()
 
-		self.s2 = snn.Convolution(input_channels, self.number_of_features, self.kernel_size, 0, 0.8, 0.05)
+		self.s2 = snn.Convolution(input_channels, self.number_of_features, self.kernel_size, 0.8, 0.05)
 		self.stdp = snn.STDP(self.s2, stdp_lr)
 		self.anti_stdp = snn.STDP(self.s2, anti_stdp_lr)
 		self.decision_map = []
@@ -118,13 +118,13 @@ kernels = [	utils.GaborKernel(5, 45+22.5),
 filter = utils.Filter(kernels, use_abs = True)
 lateral_inhibition = utils.LateralIntencityInhibition([0.15, 0.12, 0.1, 0.07, 0.05])
 
-task = "Norb"
+task = "Caltech"
 use_cuda = True
 
 if task == "Caltech":
 	s1c1 = S1C1Transform(filter, 7, 6, lateral_inhibition)
-	trainsetfolder = utils.ImageFolderCache("caltech/train", s1c1)
-	testsetfolder = utils.ImageFolderCache("caltech/test", s1c1)
+	trainsetfolder = utils.CacheDataset(ImageFolder("facemotortrain", s1c1))
+	testsetfolder = utils.CacheDataset(ImageFolder("facemotortest", s1c1))
 	mozafari = Mozafari2018(4, 10, 2, (17,17), 42, (0.005, -0.0025), (-0.005, 0.0005), 0.5)
 	trainset = DataLoader(trainsetfolder, batch_size = len(trainsetfolder), shuffle = True)
 	testset = DataLoader(testsetfolder, batch_size = len(testsetfolder), shuffle = True)
@@ -135,7 +135,7 @@ elif task == "ETH":
 
 	def target_transform(target):
 		return target//10
-	datafolder = utils.ImageFolderCache("eth80-cropped-close128", s1c1, target_transform=target_transform)
+	datafolder = utils.CacheDataset(ImageFolder("eth80-cropped-close128", s1c1, target_transform=target_transform))
 	test_instances = np.random.randint(0, 10, 8)
 	train_indices = set(range(len(datafolder)))
 	test_indices = set()
@@ -150,16 +150,12 @@ elif task == "ETH":
 	max_epoch = 250
 elif task == "Norb":
 	s1c1 = S1C1Transform(filter, 5, 4, lateral_inhibition, timesteps=30)
-	trainsetfolder = utils.ImageFolderCache("norb/train", s1c1)
-	testsetfolder = utils.ImageFolderCache("norb/test", s1c1)
+	trainsetfolder = utils.CacheDataset(ImageFolder("norb/train", s1c1))
+	testsetfolder = utils.CacheDataset(ImageFolder("norb/test", s1c1))
 	mozafari = Mozafari2018(4, 10, 5, (23,23), 150, (0.05, -0.003), (-0.05, 0.0005), 0.5)
 	trainset = DataLoader(trainsetfolder, batch_size = len(trainsetfolder), shuffle = True)
 	testset = DataLoader(testsetfolder, batch_size = len(testsetfolder), shuffle = True)
 	max_epoch = 800
-
-data, target = next(trainset.__iter__())
-data_test, target_test = next(testset.__iter__())
-print("Dataset loaded successfully!")
 
 if use_cuda:
 	mozafari.cuda()
@@ -227,12 +223,14 @@ def test(data, target, network):
 
 for epoch in range(max_epoch):
 	print("Epoch #:", epoch)
-	perf_train = train(data, target, mozafari)
+	for data, target in trainset:
+		perf_train = train(data, target, mozafari)
 	if best_train[0] <= perf_train[0]:
 		best_train = np.append(perf_train, epoch)
 	print("Current Train:", perf_train)
 	print("   Best Train:", best_train)
-	perf_test = test(data_test, target_test, mozafari)
+	for data_test, target_test in testset:
+		perf_test = test(data_test, target_test, mozafari)
 	if best_test[0] <= perf_test[0]:
 		best_test = np.append(perf_test, epoch)
 		torch.save(mozafari.state_dict(), "saved.net")
