@@ -177,13 +177,13 @@ class STDP(nn.Module):
 		returns them as a list of boolean tensors. True for pre-then-post (or concurrency) and False for post-then-pre.
 		Input and output tensors must be spike-waves.
 
-        Args:
-            input_spikes (Tensor): Input spike-wave
+		Args:
+			input_spikes (Tensor): Input spike-wave
 			output_spikes (Tensor): Output spike-wave
 			winners (List of Tuples): List of winners. Each tuple denotes a winner in a form of a triplet (feature, row, column).
 
-        Returns:
-            List: pre-post ordering of spikes
+		Returns:
+			List: pre-post ordering of spikes
 		"""
 		# accumulating input and output spikes to get latencies
 		input_latencies = torch.sum(input_spikes, dim=0)

@@ -160,7 +160,7 @@ class GaborKernel(FilterKernel):
 		return gabor_tensor.float()
 
 class Filter:
-	r"""Applies a filter transform. Each filter contains a sequence of :atr:`FilterKernel` objects.
+	r"""Applies a filter transform. Each filter contains a sequence of :attr:`FilterKernel` objects.
 	The result of each filter kernel will be passed through a given threshold (if not :attr:`None`).
 
 	Args:
