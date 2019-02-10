@@ -21,17 +21,17 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="docs\index.rst" />
-    <Content Include="docs\intro.rst" />
-    <Content Include="docs\logo.png" />
-    <Content Include="docs\modules.rst" />
-    <Content Include="docs\spike_wave.svg" />
-    <Content Include="docs\SpykeTorch.rst" />
-    <Content Include="docs\times.svg" />
+    <Content Include="docs\source\index.rst" />
+    <Content Include="docs\source\intro.rst" />
+    <Content Include="docs\source\logo.png" />
+    <Content Include="docs\source\modules.rst" />
+    <Content Include="docs\source\spike_wave.svg" />
+    <Content Include="docs\source\SpykeTorch.rst" />
+    <Content Include="docs\source\times.svg" />
     <Content Include="logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="docs\conf.py" />
+    <Compile Include="docs\source\conf.py" />
     <Compile Include="MozafariDeep.py">
       <SubType>Code</SubType>
     </Compile>
@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="docs\" />
+    <Folder Include="docs\source\" />
     <Folder Include="SpykeTorch\" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
