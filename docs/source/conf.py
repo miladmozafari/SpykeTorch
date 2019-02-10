@@ -16,9 +16,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
-import sphinxcontrib.katex
-import sphinxcontrib.katex as katex
-
 
 # -- Project information -----------------------------------------------------
 
@@ -59,7 +56,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.katex',
+    #'sphinxcontrib.katex',
 ]
 
 autodoc_default_options = {
@@ -75,13 +72,13 @@ autodoc_default_options = {
 #
 #
 
-katex_options = r'''
-delimiters : [
-   {left: "$$", right: "$$", display: true},
-   {left: "\\(", right: "\\)", display: false},
-   {left: "\\[", right: "\\]", display: true}
-]
-'''
+#katex_options = r'''
+#delimiters : [
+#   {left: "$$", right: "$$", display: true},
+#   {left: "\\(", right: "\\)", display: false},
+#   {left: "\\[", right: "\\]", display: true}
+#]
+#'''
 
 napoleon_use_ivar = True
 
