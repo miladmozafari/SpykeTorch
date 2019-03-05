@@ -38,6 +38,47 @@ def generate_inhibition_kernel(inhibition_percents):
 				inhibition_kernel[i,j] = inhibition_percents[dist - 1]
 	return inhibition_kernel
 
+def tensor_to_text(data, address):
+	r"""Saves a tensor into a text file in row-major format. The first line of the file contains comma-separated integers denoting
+	the size of each dimension. The second line contains comma-separated values indicating all the tensor's data.
+
+	Args:
+		data (Tensor): The tensor to be saved.
+		address (str): The saving address.
+	"""
+	f = open(address, "w")
+	data_cpu = data.cpu()
+	shape = data.shape
+	print(",".join(map(str, shape)), file=f)
+	data_flat = data_cpu.view(-1).numpy()
+	print(",".join(data_flat.astype(np.str)), file=f)
+	f.close()
+
+def text_to_tensor(address, type='float'):
+	r"""Loads a tensor from a text file. Format of the text file is as follows: The first line of the file contains comma-separated integers denoting
+	the size of each dimension. The second line contains comma-separated values indicating all the tensor's data.
+
+	Args:
+		address (str): Address of the text file.
+		type (float or int, optional): The type of the tensor's data ('float' or 'int'). Default: 'float'
+
+	Returns:
+		Tensor: The loaded tensor.
+	"""
+	f = open(address, "r")
+	shape = tuple(map(int, f.readline().split(",")))
+	data = np.array(f.readline().split(","))
+	if type == 'float':
+		data = data.astype(np.float32)
+	elif type == 'int':
+		data = data.astype(np.int32)
+	else:
+		raise ValueError("type must be 'int' or 'float'")
+	data = torch.from_numpy(data)
+	data = data.reshape(shape)
+	f.close()
+	return data
+
 class LateralIntencityInhibition:
 	r"""Applies lateral inhibition on intensities. For each location, this inhibition decreases the intensity of the
 	surrounding cells that has lower intensities by a specific factor. This factor is relative to the distance of the

@@ -65,6 +65,14 @@ class Convolution(nn.Module):
 		"""
 		self.weight.normal_(weight_mean, weight_std)
 
+	def load_weight(self, target):
+		"""Loads weights with the target tensor.
+
+		Args:
+			target (Tensor=): The target tensor.
+		"""
+		self.weight.copy_(target)	
+
 	def forward(self, input):
 		return fn.conv2d(input, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
