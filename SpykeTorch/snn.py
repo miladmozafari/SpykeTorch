@@ -218,7 +218,7 @@ class STDP(nn.Module):
 			f = winners[i][0]
 			lr[f] = torch.where(pairings[i], *(self.learning_rate[f]))
 
-		self.conv_layer.weight += lr * (self.conv_layer.weight * (1-self.conv_layer.weight) if self.use_stabilizer else 1)
+		self.conv_layer.weight += lr * ((self.conv_layer.weight-self.lower_bound) * (self.upper_bound-self.conv_layer.weight) if self.use_stabilizer else 1)
 		self.conv_layer.weight.clamp_(self.lower_bound, self.upper_bound)
 
 	def update_learning_rate(self, feature, ap, an):
