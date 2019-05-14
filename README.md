@@ -1,3 +1,5 @@
+### **IMPORTANT: Due to some changes in the new version of PyTorch, some important SpykeTorch's functions do not work correctly. We do our best to solve the problem very soon.**
+
 # SpykeTorch
 High-speed simulator of convolutional spiking neural networks with at most one spike per neuron.
 ![alt text](https://raw.githubusercontent.com/miladmozafari/SpykeTorch/master/logo.png)
