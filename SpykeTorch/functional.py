@@ -110,38 +110,16 @@ def pointwise_inhibition(thresholded_potentials):
 	# compute signs for detection of the earliest spike
 	clamp_pot = maximum[0].sign()
 	# maximum of clamped values is the indices of the earliest spikes
-	clamp_pot_max = torch.max(clamp_pot, dim=0, keepdim=True)
+	clamp_pot_max_1 = (clamp_pot.size(0) - clamp_pot.sum(dim = 0, keepdim=True)).long()
+	clamp_pot_max_1.clamp_(0,clamp_pot.size(0)-1)
+	clamp_pot_max_0 = clamp_pot[-1:,:,:,:]
 	# finding winners (maximum potentials between early spikes)
-	winners = maximum[1].gather(0, clamp_pot_max[1])
+	winners = maximum[1].gather(0, clamp_pot_max_1)
 	# generating inhibition coefficient
 	coef = torch.zeros_like(thresholded_potentials[0]).unsqueeze_(0)
-	coef.scatter_(1, winners,clamp_pot_max[0])
+	coef.scatter_(1, winners,clamp_pot_max_0)
 	# applying inhibition to potentials (broadcasting multiplication)
 	return torch.mul(thresholded_potentials, coef)
-
-## each position inhibits its srrounding if it is higher than all of them
-## it is assumed that the threshold function is applied on the input potentials
-#def featurewise_lateral_inhibition(potentials, inhibition_radius, spikes=None):
-#	if spikes is None:
-#		spikes = potentials.sign()
-#	# finding earliest potentials for each position in each feature
-#	maximum = torch.max(spikes, dim=0, keepdim=True) # finding earliest index
-#	values = potentials.gather(dim=0, index=maximum[1]) # gathering values
-#	# propagating the earliest potential through the whole timesteps
-#	truncated_pot = spikes * values
-#	# summation with a high enough value (maximum of potential summation over timesteps) at spike positions
-#	total = truncated_pot.sum(dim=0, keepdim=True)
-#	v = total.max()
-#	truncated_pot.addcmul_(spikes,v)
-#	# summation over all timesteps
-#	total = truncated_pot.sum(dim=0,keepdim=True)
-#	# max pooling
-#	pool_val,pool_idx = fn.max_pool2d(total, 2*inhibition_radius+1, inhibition_radius+1, return_indices = True)
-#	# generating inhibition kernel
-#	#total = fn.max_unpool2d(input=pool_val, indices=pool_idx, kernel_size=2*inhibition_radius+1, stride=inhibition_radius+1,output_size=total.size()).clamp_(0,1)
-#	total = fn.max_unpool2d(input=pool_val, indices=pool_idx, kernel_size=2*inhibition_radius+1, stride=inhibition_radius+1,output_size=total.size()).sign_()
-#	# applyong inhibition
-#	return torch.mul(potentials, total)
 
 # inhibiting particular features, preventing them to be winners
 # inhibited_features is a list of features numbers to be inhibited
@@ -189,8 +167,9 @@ def get_k_winners(potentials, kwta = 1, inhibition_radius = 0, spikes = None):
 	if spikes is None:
 		spikes = potentials.sign()
 	# finding earliest potentials for each position in each feature
-	maximum = torch.max(spikes, dim=0, keepdim=True) # finding earliest index
-	values = potentials.gather(dim=0, index=maximum[1]) # gathering values
+	maximum = (spikes.size(0) - spikes.sum(dim = 0, keepdim=True)).long()
+	maximum.clamp_(0,spikes.size(0)-1)
+	values = potentials.gather(dim=0, index=maximum) # gathering values
 	# propagating the earliest potential through the whole timesteps
 	truncated_pot = spikes * values
 	# summation with a high enough value (maximum of potential summation over timesteps) at spike positions
