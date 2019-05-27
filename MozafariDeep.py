@@ -44,7 +44,7 @@ class MozafariMNIST2018(nn.Module):
 		self.conv2 = snn.Convolution(30, 250, 3, 0.8, 0.05)
 		self.conv2_t = 10
 		self.k2 = 8
-		self.r2 = 2
+		self.r2 = 1
 
 		self.conv3 = snn.Convolution(250, 200, 5, 0.8, 0.05)
 
