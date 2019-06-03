@@ -48,7 +48,7 @@ def fire(potentials, threshold=None, return_thresholded_potentials=False):
 	Returns:
 		Tensor: Spike-wave tensor.
 	"""
-	thresholded = torch.tensor(potentials)
+	thresholded = potentials.clone().detach()
 	if threshold is None:
 		thresholded[:-1]=0
 	else:
@@ -77,7 +77,7 @@ def threshold(potentials, threshold=None):
 	Returns:
 		Tensor: Thresholded potentials.
 	"""
-	outputs = torch.tensor(potentials)
+	outputs = potentials.clone().detach()
 	if threshold is None:
 		outputs[:-1]=0
 	else:
@@ -139,7 +139,7 @@ def feature_inhibition(potentials, inhibited_features):
 	Returns:
 		Tensor: Inhibited potentials.
 	"""
-	potentials_copy = torch.tensor(potentials)
+	potentials_copy = potentials.clone().detach()
 	if len(inhibited_features) != 0:
 		feature_inhibition_(potentials_copy, inhibited_features)
 	return potentials_copy

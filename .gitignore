@@ -241,5 +241,12 @@ ModelManifest.xml
 # Paket dependency manager
 .paket/paket.exe
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+SpykeTorch/__pycache__
+
 # FAKE - F# Make
 .fake/

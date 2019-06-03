@@ -236,7 +236,7 @@ class Filter:
 		self.number_of_kernels = len(filter_kernels)
 		self.padding = padding
 		if isinstance(thresholds, list):
-			self.thresholds = torch.tensor(thresholds)
+			self.thresholds = thresholds.clone().detach()
 			self.thresholds.unsqueeze_(0).unsqueeze_(2).unsqueeze_(3)
 		else:
 			self.thresholds = thresholds
@@ -291,7 +291,7 @@ class Intensity2Latency:
 	
 		for i in range(self.time_steps):
 			spike_map.scatter_(0, sorted_bins_idx[i], sorted_bins_value[i])
-			spike_map_copy = torch.tensor(spike_map)
+			spike_map_copy = spike_map.clone().detach()
 			spike_map_copy = spike_map_copy.reshape(tuple(intencities.shape))
 			bins_intencities.append(spike_map_copy.squeeze(0).float())
 			#bins.append(spike_map_copy.sign().squeeze_(0).float())
