@@ -245,8 +245,8 @@ ModelManifest.xml
 .ipynb_checkpoints
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
-SpykeTorch/__pycache__
+# __pycache__/
+# SpykeTorch/__pycache__
 
 # FAKE - F# Make
 .fake/
