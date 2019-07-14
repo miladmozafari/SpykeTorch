@@ -63,7 +63,7 @@ class MozafariMNIST2018(nn.Module):
 		self.spk_cnt2 = 0
 
 	def forward(self, input, max_layer):
-		input = sf.pad(input, (2,2,2,2), 0)
+		input = sf.pad(input.float(), (2,2,2,2), 0)
 		if self.training:
 			pot = self.conv1(input)
 			spk, pot = sf.fire(pot, self.conv1_t, True)
@@ -211,7 +211,7 @@ class S1C1Transform:
 		image = self.filter(image)
 		image = sf.local_normalization(image, 8)
 		temporal_image = self.temporal_transform(image)
-		return temporal_image.sign()
+		return temporal_image.sign().byte()
 
 kernels = [ utils.DoGKernel(3,3/9,6/9),
 			utils.DoGKernel(3,6/9,3/9),

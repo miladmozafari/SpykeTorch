@@ -50,6 +50,7 @@ class Mozafari2018(nn.Module):
 		self.ctx = {"input_spikes":None, "potentials":None, "output_spikes":None, "winners":None}
 	
 	def forward(self, input):
+		input = input.float()
 		pot = self.s2(input)
 		
 		if self.training and self.dropout[0] > 0:
@@ -108,7 +109,7 @@ class S1C1Transform:
 			image = self.lateral_inhibition(image)
 		temporal_image = self.temporal_transform(image)
 		temporal_image = sf.pointwise_inhibition(temporal_image)
-		return temporal_image.sign()
+		return temporal_image.sign().byte()
 
 kernels = [	utils.GaborKernel(5, 45+22.5),
 			utils.GaborKernel(5, 90+22.5),
