@@ -1,6 +1,7 @@
 # SpykeTorch
 High-speed simulator of convolutional spiking neural networks with at most one spike per neuron.
-![alt text](https://raw.githubusercontent.com/miladmozafari/SpykeTorch/master/logo.png)
+
+<img src="https://raw.githubusercontent.com/miladmozafari/SpykeTorch/master/logo.png" alt="alt text" width=50%>
 
 SpykeTorch is a PyTorch-based simulator of convolutional spiking neural networks, in which the neurons emit at most one spike per stimulus. SpykeTorch supports STDP and Reward-modulated STDP learning rules. The current code is the early object oriented version of this simulator and you can find the documentation in docs folder in PDF format or in our lab website (http://cnrl.ut.ac.ir/SpykeTorch/doc/) in HTML format. Since SpykeTorch is fully compatible with PyTorch, you can easily use it if you know PyTorch. A tutorial is available in the paper titled "SpykeTorch: Efficient Simulation of Convolutional Spiking Neural Networks with at most one Spike per Neuron" which introduces the SpykeTorch package (https://www.frontiersin.org/articles/10.3389/fnins.2019.00625/full).
 
