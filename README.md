@@ -13,7 +13,7 @@ To setup this package, you can install Anaconda or Miniconda
 git clone https://github.com/miladmozafari/SpykeTorch
 
 # Create a new conda environment
-conda create -n spyketorchproject python==3
+conda create -n spyketorchproject python=3
 conda activate spyketorchproject
 
 # Install all the dependencies
