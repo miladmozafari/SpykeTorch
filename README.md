@@ -7,6 +7,23 @@ SpykeTorch is a PyTorch-based simulator of convolutional spiking neural networks
 
 **IMPORTANT**: Current version of SpykeTorch does not support negative synaptic weights.
 
+To setup this package, you can install Anaconda or Miniconda
+```
+# Clone the repository
+git clone https://github.com/miladmozafari/SpykeTorch
+
+# Create a new conda environment
+conda create -n spyketorchproject python==3
+conda activate spyketorchproject
+
+# Install all the dependencies
+pip install -r requirements.txt
+```
+```
+# Alternatively, one can just run the following command
+pip install git+https://github.com/miladmozafari/SpykeTorch.git
+```
+
 **Scripts info:**
  - [`MozafariShallow.py`](MozafariShallow.py): Reimplementation of the paper "First-Spike-Based Visual Categorization Using Reward-Modulated STDP" (https://ieeexplore.ieee.org/document/8356226/).
  - [`MozafariDeep.py`](MozafariDeep.py): Reimplementation of the paper "Bio-Inspired Digit Recognition Using Reward-Modulated Spike-Timing-Dependent Plasticity in Deep Convolutional Networks" (https://www.sciencedirect.com/science/article/abs/pii/S0031320319301906).
